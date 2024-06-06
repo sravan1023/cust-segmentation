@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Segmentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="static/styles.css"> -->
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #001f3f, #005082);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header, footer {
+            background: #003366;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3.5em;
+            transition: color 0.3s;
+        }
+
+        header h1:hover {
+            color: #3c74b8;
+        }
+
+        header nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        header nav ul li {
+            margin: 0 15px;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        header nav ul li a:hover {
+            color: #3c74b8;
+        }
+
+        header nav ul li a.button {
+            background-color: #007BFF;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        header nav ul li a.button:hover {
+            background-color: #0056b3;
+        }
+
+        main {
+            background-color: #002b4e;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .upper-part {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .upper-part > section {
+            width: 48%;
+            background-color: #003366;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .upper-part > section h2 {
+            color: #3c74b8;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .upper-part > section p {
+            line-height: 1.6;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        input[type="file"] {
+            margin-top: 5px;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .plot-container {
+            margin-top: 20px;
+        }
+
+        .plot-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .score, .runtime {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            color: #ffffff;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #013c61;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            cursor: pointer;
+        }
+
+        .info-icon {
+            position: absolute;
+            top: 10px; /* Adjust this value to position the icon properly */
+            right: 10px; /* Adjust this value to position the icon properly */
+            font-size: 1.5em;
+            color: #3c74b8;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Customer Segmentation</h1>
+        <nav>
+            <ul>
+                <li><a href="https://github.com/sravan1023/cust-segmentation" target="_blank" class="button">GitHub</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="upper-part">
+            <section id="about-section">
+                <h2>About</h2>
+                <p>This application serves as a project prototype designed to showcase
+                     the development of an end-to-end model pipeline. 
+                     The project encompasses several phases, like data collection, data processing, 
+                     machine learning model creation, and deployment on 
+                     an AWS EC2 cloud environment. The objective is to illustrate the integration and 
+                     execution of these components.</p>
+            </section>
+            <section id="welcome-section">
+                <h2>Dataset</h2>
+                <p>Upload data file to start the segmentation process.</p>
+                <p>Analyzing might take a few minutes depending on the size</p>
+                <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                    <label for="file">Excel File:</label>
+                    <input type="file" id="file" name="file" accept=".xlsx">
+                    <button type="submit">Upload and Analyze</button>
+                    <i class="fas fa-info-circle info-icon" onclick="showModal()"></i>
+                </form>
+            </section>
+        </div>
+        
+        <section id="results-section">
+            {% if column_descriptions %}
+            <div id="column-descriptions">
+                <h2>Column Descriptions</h2>
+                <div>{{ column_descriptions | safe }}</div>
+            </div>
+            {% endif %}
+
+            {% if kmeans_plot and dbscan_plot %}
+            <h2>Segmentation Results</h2>
+            <div>
+                <h3>KMeans Clustering</h3>
+                    <p class="score">Silhouette Score: {{ kmeans_score }}</p>
+                    <p class="runtime">Runtime: {{ kmeans_runtime }} seconds</p>
+                    <div class="plot-container">
+                    {{ kmeans_plot|safe }}
+                </div>
+            </div>
+            <div>
+                <h3>DBSCAN Clustering</h3>
+                    <p class="score">Silhouette Score: {{ dbscan_score }}</p>
+                    <p class="runtime">Runtime: {{ dbscan_runtime }} seconds</p>
+                    <div class="plot-container">
+                    {{ dbscan_plot|safe }}
+                </div>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+    <footer>
+        <p>&copy; This application is a project prototype and is not intended for production use.</p>
+    </footer>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Data Upload Precautions</h2>
+            <ul>
+                <li>Ensure the Excel file has a header row with column names.</li>
+                <li>Columns should include 'CustomerID', 'Quantity', 'UnitPrice', and 'InvoiceDate'.</li>
+                <li>Make sure there are no empty rows in the data.</li>
+                <li>All date fields should be in a recognizable date format.</li>
+                <li>Remove any duplicates to ensure data accuracy.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showModal() {
+            document.getElementById('myModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('myModal')) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
